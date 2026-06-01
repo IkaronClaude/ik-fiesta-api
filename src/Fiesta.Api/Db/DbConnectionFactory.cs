@@ -1,6 +1,6 @@
 using Microsoft.Data.SqlClient;
 
-namespace Mimir.Api.Db;
+namespace Fiesta.Api.Db;
 
 public class DbConnectionFactory
 {

@@ -14,8 +14,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-      - run: dotnet restore fiesta-api.slnx
-      - run: dotnet build fiesta-api.slnx --no-restore --configuration Release
+      - run: dotnet restore ik-fiesta-api.slnx
+      - run: dotnet build ik-fiesta-api.slnx --no-restore --configuration Release
 
   image:
     # Build + push the Linux image to GHCR on pushes to main.
@@ -38,5 +38,5 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/fiesta-api:latest
-            ghcr.io/${{ github.repository_owner }}/fiesta-api:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/ik-fiesta-api:latest
+            ghcr.io/${{ github.repository_owner }}/ik-fiesta-api:${{ github.sha }}

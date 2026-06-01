@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Mimir.Api.Services;
+namespace Fiesta.Api.Services;
 
 public class TokenService
 {

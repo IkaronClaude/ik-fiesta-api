@@ -1,4 +1,4 @@
-namespace Mimir.Api.Models;
+namespace Fiesta.Api.Models;
 
 public record ShopItemResponse(int GoodsNo, string Name, int Price, int Unit);
 

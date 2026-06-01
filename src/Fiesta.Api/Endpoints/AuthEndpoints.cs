@@ -1,7 +1,7 @@
-using Mimir.Api.Models;
-using Mimir.Api.Services;
+using Fiesta.Api.Models;
+using Fiesta.Api.Services;
 
-namespace Mimir.Api.Endpoints;
+namespace Fiesta.Api.Endpoints;
 
 public static class AuthEndpoints
 {

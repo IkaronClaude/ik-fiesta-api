@@ -2,10 +2,10 @@ using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Data.SqlClient;
-using Mimir.Api.Db;
-using Mimir.Api.Models;
+using Fiesta.Api.Db;
+using Fiesta.Api.Models;
 
-namespace Mimir.Api.Services;
+namespace Fiesta.Api.Services;
 
 public class AccountService
 {

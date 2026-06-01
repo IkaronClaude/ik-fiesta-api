@@ -1,4 +1,4 @@
-# fiesta-api
+# ik-fiesta-api
 
 A standalone REST API for **Fiesta Online** private servers — accounts,
 authentication, characters, leaderboard, and a cash/item shop, talking directly
@@ -10,8 +10,6 @@ content toolkit) so it can be deployed, versioned, and scaled on its own. It has
 no dependency on the Mimir content tools — it's a plain ASP.NET Core service over
 the existing Account/Character databases.
 
-> The assembly is still named `Mimir.Api.dll` (history-preserving split); the
-> repo and image are `fiesta-api`. A namespace rename is an optional later pass.
 
 ## Endpoints
 
@@ -45,23 +43,23 @@ Secrets belong in env vars / your orchestrator's secret store — never commit t
 ## Build & run
 
 ```bash
-dotnet build fiesta-api.slnx -c Release
+dotnet build ik-fiesta-api.slnx -c Release
 ACCOUNT_CONN='Server=...;Database=Account;...' \
 CHARACTER_CONN='Server=...;Database=World00_Character;...' \
 JWT_SECRET='<long-random>' \
-dotnet run --project src/Mimir.Api
+dotnet run --project src/Fiesta.Api
 ```
 
 ## Docker
 
 ```bash
-docker build -t fiesta-api .                    # Linux
-docker build -t fiesta-api -f Dockerfile.windows .   # Windows
+docker build -t ik-fiesta-api .                    # Linux
+docker build -t ik-fiesta-api -f Dockerfile.windows .   # Windows
 docker run -p 5000:5000 \
-  -e ACCOUNT_CONN=... -e CHARACTER_CONN=... -e JWT_SECRET=... fiesta-api
+  -e ACCOUNT_CONN=... -e CHARACTER_CONN=... -e JWT_SECRET=... ik-fiesta-api
 ```
 
-CI publishes `ghcr.io/<owner>/fiesta-api:latest` on pushes to `main`.
+CI publishes `ghcr.io/<owner>/ik-fiesta-api:latest` on pushes to `main`.
 
 ## License
 

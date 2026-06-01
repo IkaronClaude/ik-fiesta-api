@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
-using Mimir.Api.Db;
-using Mimir.Api.Endpoints;
-using Mimir.Api.Services;
+using Fiesta.Api.Db;
+using Fiesta.Api.Endpoints;
+using Fiesta.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var cfg = builder.Configuration;

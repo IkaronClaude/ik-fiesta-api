@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <RootNamespace>Mimir.Api</RootNamespace>
+    <RootNamespace>Fiesta.Api</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

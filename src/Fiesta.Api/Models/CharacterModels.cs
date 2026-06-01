@@ -1,4 +1,4 @@
-namespace Mimir.Api.Models;
+namespace Fiesta.Api.Models;
 
 public record CharacterResponse(
     int CharNo,

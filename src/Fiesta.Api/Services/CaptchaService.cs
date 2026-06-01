@@ -1,4 +1,4 @@
-namespace Mimir.Api.Services;
+namespace Fiesta.Api.Services;
 
 public class CaptchaService
 {
