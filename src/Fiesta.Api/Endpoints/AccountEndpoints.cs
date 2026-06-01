@@ -11,13 +11,12 @@ public static class AccountEndpoints
         // POST /api/accounts — create account. Captcha verified if a provider is
         // configured, UNLESS the caller is trusted (admin JWT, or a valid API key).
         app.MapPost("/api/accounts", async (CreateAccountRequest req, HttpContext ctx,
-            AccountService accounts, CaptchaService captcha, ApiKeyService apiKeys) =>
+            AccountService accounts, CaptchaService captcha) =>
         {
-            // Trusted callers skip the captcha: an authenticated admin (role=admin
-            // JWT), or a valid X-Api-Key header (admin-issued, for CLI/automation).
-            bool bypass = ctx.User.IsInRole("admin");
-            if (!bypass && ctx.Request.Headers.TryGetValue("X-Api-Key", out var apiKey))
-                bypass = await apiKeys.ValidateAsync(apiKey.ToString());
+            // Trusted callers (admin JWT or valid X-Api-Key) skip the captcha AND
+            // the register rate limit. Computed once in middleware (Program.cs)
+            // and stashed, so the limiter policy and this handler agree.
+            bool bypass = ctx.Items.TryGetValue("RlBypass", out var v) && v is true;
 
             if (!bypass && !await captcha.VerifyAsync(req.CaptchaToken))
                 return Results.Json(new { error = "Captcha verification failed." },

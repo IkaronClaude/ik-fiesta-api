@@ -65,11 +65,18 @@ builder.Services.AddRateLimiter(opts =>
         o.PermitLimit = 10;
         o.Window      = TimeSpan.FromMinutes(15);
     });
-    opts.AddFixedWindowLimiter("register", o =>
-    {
-        o.PermitLimit = 3;
-        o.Window      = TimeSpan.FromHours(1);
-    });
+    // Public registration: 3/hour per IP. Trusted callers (admin JWT or a valid
+    // API key) are flagged in middleware (HttpContext.Items["RlBypass"]) and get
+    // NoLimiter — no register cap, for CLI / automation.
+    opts.AddPolicy("register", httpContext =>
+        httpContext.Items.TryGetValue("RlBypass", out var v) && v is true
+            ? RateLimitPartition.GetNoLimiter<string>("bypass")
+            : RateLimitPartition.GetFixedWindowLimiter(GetClientIp(httpContext),
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 3,
+                    Window      = TimeSpan.FromHours(1)
+                }));
     opts.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
@@ -174,8 +181,24 @@ if (enableSwagger)
 if (!string.IsNullOrEmpty(leDomain) || !string.IsNullOrEmpty(certPath))
     app.UseHttpsRedirection();
 if (corsOrigins.Length > 0) app.UseCors();
-app.UseRateLimiter();
+
+// Authenticate first so the bypass check below can see role=admin.
 app.UseAuthentication();
+
+// Compute the captcha / rate-limit bypass once, BEFORE the rate limiter, so
+// trusted callers (admin JWT or a valid X-Api-Key) skip both the register
+// limit and the captcha. Stashed for the limiter policy + the create handler.
+app.Use(async (ctx, next) =>
+{
+    bool bypass = ctx.User.IsInRole("admin");
+    if (!bypass && ctx.Request.Headers.TryGetValue("X-Api-Key", out var apiKey))
+        bypass = await ctx.RequestServices.GetRequiredService<ApiKeyService>()
+            .ValidateAsync(apiKey.ToString());
+    ctx.Items["RlBypass"] = bypass;
+    await next();
+});
+
+app.UseRateLimiter();
 app.UseAuthorization();
 
 // --- Public config endpoint (exposes captcha provider + site key for SPA) ---
