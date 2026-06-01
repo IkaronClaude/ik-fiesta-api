@@ -19,6 +19,7 @@ builder.Services.AddSingleton<TokenService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<CharacterService>();
 builder.Services.AddScoped<ShopService>();
+builder.Services.AddScoped<ApiKeyService>();
 
 // --- Captcha (singleton — provider/site-key are env-var constants) ---
 builder.Services.AddHttpClient();
@@ -191,6 +192,7 @@ app.MapGet("/api/config", (CaptchaService captcha) => Results.Ok(new
 // --- Routes ---
 app.MapAuthEndpoints();
 app.MapAccountEndpoints();
+app.MapApiKeyEndpoints();
 app.MapCharacterEndpoints();
 app.MapShopEndpoints();
 

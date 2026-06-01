@@ -8,10 +8,18 @@ public static class AccountEndpoints
 {
     public static void MapAccountEndpoints(this WebApplication app)
     {
-        // POST /api/accounts — create account (no auth required, captcha verified if provider configured)
-        app.MapPost("/api/accounts", async (CreateAccountRequest req, AccountService accounts, CaptchaService captcha) =>
+        // POST /api/accounts — create account. Captcha verified if a provider is
+        // configured, UNLESS the caller is trusted (admin JWT, or a valid API key).
+        app.MapPost("/api/accounts", async (CreateAccountRequest req, HttpContext ctx,
+            AccountService accounts, CaptchaService captcha, ApiKeyService apiKeys) =>
         {
-            if (!await captcha.VerifyAsync(req.CaptchaToken))
+            // Trusted callers skip the captcha: an authenticated admin (role=admin
+            // JWT), or a valid X-Api-Key header (admin-issued, for CLI/automation).
+            bool bypass = ctx.User.IsInRole("admin");
+            if (!bypass && ctx.Request.Headers.TryGetValue("X-Api-Key", out var apiKey))
+                bypass = await apiKeys.ValidateAsync(apiKey.ToString());
+
+            if (!bypass && !await captcha.VerifyAsync(req.CaptchaToken))
                 return Results.Json(new { error = "Captcha verification failed." },
                     statusCode: StatusCodes.Status400BadRequest);
 
@@ -31,7 +39,7 @@ public static class AccountEndpoints
         })
         .WithTags("Accounts")
         .WithSummary("Register a new account")
-        .WithDescription("Creates a game account with separate web and in-game passwords. Captcha required if configured.")
+        .WithDescription("Creates a game account with separate web and in-game passwords. Captcha required if configured, unless the caller presents an admin JWT or a valid X-Api-Key.")
         .Produces<AccountResponse>(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status409Conflict)
