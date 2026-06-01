@@ -38,5 +38,5 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/ik-fiesta-api:latest
-            ghcr.io/${{ github.repository_owner }}/ik-fiesta-api:${{ github.sha }}
+            ghcr.io/ikaronclaude/ik-fiesta-api:latest
+            ghcr.io/ikaronclaude/ik-fiesta-api:${{ github.sha }}
