@@ -5,9 +5,9 @@ authentication, characters, leaderboard, and a cash/item shop, talking directly
 to the game's SQL databases. JWT auth, BCrypt web-password hashing, optional
 captcha, and optional Let's Encrypt TLS.
 
-Split out of [Project Mimir](https://github.com/IkaronClaude/ProjectMimir) (the
+Split out of [ik-fiesta-collab](https://github.com/IkaronClaude/ik-fiesta-collab) (the
 content toolkit) so it can be deployed, versioned, and scaled on its own. It has
-no dependency on the Mimir content tools — it's a plain ASP.NET Core service over
+no dependency on the ik-fiesta-collab content tools — it's a plain ASP.NET Core service over
 the existing Account/Character databases.
 
 
