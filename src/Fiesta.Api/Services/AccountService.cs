@@ -16,7 +16,10 @@ public class AccountService
     private static string Md5Hex(string s) =>
         Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(s))).ToLower();
 
-    public async Task<AccountResponse> CreateAccountAsync(CreateAccountRequest req)
+    /// <param name="ingameGmLevel">When set (trusted callers only — the endpoint
+    /// passes null for untrusted ones), stamps tUser.nAuthID after creation so the
+    /// account is provisioned with an in-game GM/auth level. 1 = normal, 9 = admin.</param>
+    public async Task<AccountResponse> CreateAccountAsync(CreateAccountRequest req, int? ingameGmLevel = null)
     {
         var passwordMd5 = Md5Hex(req.IngamePassword);
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(req.WebPassword);
@@ -60,6 +63,16 @@ public class AccountService
             credCmd.Parameters.AddWithValue("@userNo", userNo);
             credCmd.Parameters.AddWithValue("@hash", passwordHash);
             await credCmd.ExecuteNonQueryAsync();
+        }
+
+        // Trusted callers may provision an in-game GM/auth level in the same call.
+        if (ingameGmLevel is { } gm)
+        {
+            await using var gmCmd = new SqlCommand(
+                "UPDATE tUser SET nAuthID = @auth WHERE nUserNo = @userNo", conn);
+            gmCmd.Parameters.AddWithValue("@auth", gm);
+            gmCmd.Parameters.AddWithValue("@userNo", userNo);
+            await gmCmd.ExecuteNonQueryAsync();
         }
 
         return new AccountResponse(userNo, req.Username, req.Email, created);

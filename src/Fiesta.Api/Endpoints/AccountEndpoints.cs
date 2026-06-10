@@ -22,9 +22,14 @@ public static class AccountEndpoints
                 return Results.Json(new { error = "Captcha verification failed." },
                     statusCode: StatusCodes.Status400BadRequest);
 
+            // GM/auth level is honoured ONLY for trusted callers (admin JWT or a
+            // valid X-Api-Key — the same `bypass` that skips captcha/rate-limit).
+            // Public registrants can't self-grant GM even if they send the field.
+            var ingameGmLevel = bypass ? req.IngameGmLevel : null;
+
             try
             {
-                var account = await accounts.CreateAccountAsync(req);
+                var account = await accounts.CreateAccountAsync(req, ingameGmLevel);
                 return Results.Created($"/api/accounts/{account.UserNo}", account);
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("already exists"))
